@@ -1,4 +1,4 @@
-package main
+﻿package main
 
 import (
     "time"
@@ -7,14 +7,6 @@ import (
 
 func main() {
     r := rand.New(rand.NewSource(time.Now().UnixNano()))
-	str1 := "huangmenji"
-	str2 := "malatang"
-
-    switch(r.Intn(2)){
-		case 0:
-			print(str1)
-		case 1:
-			print(str2)
-	}
-    
+	shop := []string{"黄焖鸡", "麻辣烫", "石锅拌饭", "拉面"}
+	print(shop[r.Intn(len(shop))])    
 }
