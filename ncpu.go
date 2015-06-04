@@ -10,7 +10,6 @@ func  run(i,n int ,ch chan int){
         count = count +i
     }   
     ch <- count
- 
 }
  
 func main(){
