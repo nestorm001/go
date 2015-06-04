@@ -3,11 +3,21 @@ package main
 import "fmt"
 
 func getSequence() func() int {
-   i:=0
-   return func() int {
-      i+=1
-	  return i
-   }
+    var a int = 1
+	var b int = 0
+	var i int = 0
+
+	return func() int {
+		i++
+		if i == 1 {
+			return 0
+		} else {
+			c := a + b
+			a = b
+			b = c
+			return c
+		}
+	}
 }
 
 func main(){
@@ -15,12 +25,7 @@ func main(){
    nextNumber := getSequence()  
 
    /* invoke nextNumber to increase i by 1 and return the same */
-   fmt.Println(nextNumber())
-   fmt.Println(nextNumber())
-   fmt.Println(nextNumber())
-   
-   /* create a new sequence and see the result, i is 0 again*/
-   nextNumber1 := getSequence()  
-   fmt.Println(nextNumber1())
-   fmt.Println(nextNumber1())
+   for i := 0; i < 80; i++ {
+		fmt.Println(nextNumber())
+   }
 }
