@@ -11,7 +11,7 @@ func sum(a []int, c chan int) {
 }
 
 func main() {
-	const num = 1e9
+	const num = 1e8
 	a := [num]int{}
 	i := 0
 	for i < num {
