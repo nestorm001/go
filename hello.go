@@ -1,17 +1,21 @@
 package main
 
-// import "fmt"
+import "fmt"
+
 // import "time"
 
 func main() {
 	print("go ni da ye\n")
-//	var i int
-//	var j int
+	//	var i int
+	//	var j int
 	i := 1
 	j := 1
 	i++
 	print(i, "\n", j, "\n")
-	
+	var result float64
+	result = 13.9 - 13.8
+	fmt.Printf("%f", result)
+
 	/* t1 :=time.Now()
 	count := 0
 	for i := 0; i < 10000000000; i++{
@@ -19,7 +23,7 @@ func main() {
 	}
 	t2 := time.Now()
 	fmt.Printf("cost: %d, count: %d\n", t2.Sub(t1), count)
-	
+
 	t3 :=time.Now()
 	count1 := 0
 	for i := 0; i < 10000000000; i++{
