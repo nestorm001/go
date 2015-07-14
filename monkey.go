@@ -9,9 +9,9 @@ import (
 func main() {
 	fileName := "monkey.txt"
 	currentTime := time.Now().Format("2006.01.02 15:04:05")
-	monkey, err := os.Create(fileName)
+	monkey, err := os.OpenFile(fileName, os.O_APPEND, 0)
 	if err != nil {
-		monkey, _ := os.Open(fileName)
+		monkey, _ := os.Create(fileName)
 		monkey.WriteString(currentTime + "\n")
 	} else {
 		monkey.WriteString(currentTime + "\n")
