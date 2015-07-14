@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 	"strings"
-	//"unicode/utf8"
+//"unicode/utf8"
 	"strconv"
 )
 
@@ -176,8 +176,12 @@ func main() {
 	fmt.Println(" TrimSpace 函数的用法")
 	fmt.Println(strings.TrimSpace(" \t\n a lone gopher \n\t\r\n")) // a lone gopher
 
-
-	string := strings.Split(string("659000	自治区直辖县级行政区划\n"),"	")
-	code, _ := strconv.Atoi(string[0])
+	result := strings.Split(strings.Split(string("659000	自治区直辖县级行政区划\n\n\n"), "\n")[0], "	")
+	code, _ := strconv.Atoi(result[0])
+	fmt.Println(strings.Split(string("659000	自治区直辖县级行政区划\n\n\n"), "\n"))
 	fmt.Println(code + 1)
+	fmt.Println("<item>" + result[1] + "</item>" + "\r")
+	stringLine := strings.Replace("659000	自治区直辖县级行政区划\r\n\r", "\r", "\n", -1)
+	fmt.Println(stringLine)
+	result = strings.Split(strings.Split(stringLine, "\n"), "	")
 }
