@@ -65,7 +65,12 @@ func saveProvince(line []byte) {
 	defer fCodeOut.Close()
 	code, name := getCodeAndName(line)
 	if code % 10000 == 0 {
-		fOut.WriteString("\t\t<item>" + name + "</item>" + "\n")
+		if name == "黑龙江省" || name == "内蒙古自治区" {
+			fOut.WriteString("\t\t<item>" + string([]rune(name)[0:3]) + "</item>" + "\n")
+		} else {
+			fOut.WriteString("\t\t<item>" + string([]rune(name)[0:2]) + "</item>" + "\n")
+		}
+
 		if code != 110000 {
 			fCodeOut.WriteString(", \n\t\tR.array." + name)
 		} else {
@@ -94,7 +99,6 @@ func saveCity(line []byte) {
 		fOut.WriteString("\t<string-array name=\"" + name + "\">" + "\n")
 		isDirectCity = false
 		province = name
-		isFirstCity = true
 	}
 	isCity := code % 10000 != 0 && code % 100 == 0
 	if isCity || isDirectCity {
@@ -134,6 +138,7 @@ func saveCounty(line []byte) {
 		if code != 110000 {
 			fCodeOut.WriteString("\n};")
 		}
+		isFirstCity = true
 		fCodeOut.WriteString("\nprivate int[] " + name + " = {")
 	}
 	isCity := code % 10000 != 0 && code % 100 == 0
@@ -145,14 +150,24 @@ func saveCounty(line []byte) {
 		name == "省直辖县级行政区划" || name == "自治区直辖县级行政区划" {
 			if name == "市辖区" {
 				fOut.WriteString("\t<string-array name=\"" + province + name + "\">" + "\n")
-				fCodeOut.WriteString("\n\t\tR.array." + province + name)
+				if isFirstCity {
+					fCodeOut.WriteString("\n\t\tR.array." + province + name)
+					isFirstCity = false
+				} else {
+					fCodeOut.WriteString(",\n\t\tR.array." + province + name)
+				}
 			}
 			if name == "省直辖县级行政区划" || name == "自治区直辖县级行政区划" {
 				isDirectCity = true
 			}
 		} else {
 			fOut.WriteString("\t<string-array name=\"" + province + name + "\">" + "\n")
-			fCodeOut.WriteString("\n\t\tR.array." + province + name)
+			if isFirstCity {
+				fCodeOut.WriteString("\n\t\tR.array." + province + name)
+				isFirstCity = false
+			} else {
+				fCodeOut.WriteString(",\n\t\tR.array." + province + name)
+			}
 		}
 	}
 	if code % 100 != 0 {
