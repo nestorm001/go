@@ -62,6 +62,12 @@ func main() {
 	/* copy content of numbers to numbers1 */
 	copy(numbers7, numbers6)
 	printSlice(numbers7)
+
+	numbers8 := numbers[2:4:7]
+	printSlice(numbers8)
+
+	numbers9 := numbers[:4]
+	printSlice(numbers9)
 }
 
 func printSlice(x []int) {
