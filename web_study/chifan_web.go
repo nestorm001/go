@@ -6,29 +6,32 @@ import (
 	"math/rand"
 	"net/http"
 	"time"
-	"io"
+	"html/template"
 )
 
 var num int16
-var output string
+
+type Result struct {
+	Output string
+}
 
 func cf(w http.ResponseWriter, r *http.Request) {
-//	fmt.Println("method:", r.Method) //获取请求的方法else {
+	//	fmt.Println("method:", r.Method) //获取请求的方法else {
+	t, _ := template.ParseFiles("web_study\\generate.html")  //解析模板文件
 
-	shop := []string{"黄焖鸡", "麻辣烫", "石锅拌饭", "拉面", "外卖"}
-	result := shop[rand.New(rand.NewSource(time.Now().UnixNano())).Intn(len(shop))]
 	if r.Method == "GET" {
-		output = ""
+		res := Result{Output:""}
+		t.Execute(w, res)
 	} else {
 		num++
-		output = "<pre>Hello there!\n今天吃" + result + "吧！\n</pre>"
+		fmt.Println(r.UserAgent())
 		fmt.Printf("被访问了%d次\n", num)
-		fmt.Println(result)
+		shop := []string{"黄焖鸡", "麻辣烫", "石锅拌饭", "拉面", "外卖"}
+		randResult := shop[rand.New(rand.NewSource(time.Now().UnixNano())).Intn(len(shop))]
+		res := Result{Output:"Hello there!\n今天吃" + randResult + "吧！\n"}
+		t.Execute(w, res)  //执行模板的merger操作
+		fmt.Println(randResult)
 	}
-	r.ParseForm() //解析参数，默认是不会解析的
-
-	io.WriteString(w, "<html><head><meta http-equiv=\"Content-Type\"content=\"text/html; charset=utf-8\"/><title>今天吃什么？</title></head>" +
-	"<body><form action=\"/\" method=\"post\"><input type=\"submit\" name=\"result\" value=\"随机一下\"></form>" + output + "</body></html>")
 }
 
 func main() {
