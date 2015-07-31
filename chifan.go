@@ -1,11 +1,11 @@
-﻿package main
+package main
 
 import (
 	"math/rand"
 	// "os/exec"
 	"time"
 	// "os"
-	 "fmt"
+	"fmt"
 )
 
 func main() {

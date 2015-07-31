@@ -11,6 +11,7 @@ import (
 const outputFileName = "address.xml"
 const outputCodeFileName = "javaCode.txt"
 const openFileName = "GB2260.txt"
+
 var province string
 var isDirectCity bool = false
 var isFirstCity bool = false
@@ -64,7 +65,7 @@ func saveProvince(line []byte) {
 	fCodeOut, _ := os.OpenFile(outputCodeFileName, os.O_APPEND, 0)
 	defer fCodeOut.Close()
 	code, name := getCodeAndName(line)
-	if code % 10000 == 0 {
+	if code%10000 == 0 {
 		if name == "黑龙江省" || name == "内蒙古自治区" {
 			fOut.WriteString("\t\t<item>" + string([]rune(name)[0:3]) + "</item>" + "\n")
 		} else {
@@ -92,7 +93,7 @@ func saveCity(line []byte) {
 	fCodeOut, _ := os.OpenFile(outputCodeFileName, os.O_APPEND, 0)
 	defer fCodeOut.Close()
 	code, name := getCodeAndName(line)
-	if code % 10000 == 0 {
+	if code%10000 == 0 {
 		if code != 110000 {
 			fOut.WriteString("\t</string-array>" + "\n\n")
 		}
@@ -100,10 +101,10 @@ func saveCity(line []byte) {
 		isDirectCity = false
 		province = name
 	}
-	isCity := code % 10000 != 0 && code % 100 == 0
+	isCity := code%10000 != 0 && code%100 == 0
 	if isCity || isDirectCity {
 		if name == "市辖区" || name == "县" ||
-		name == "省直辖县级行政区划" || name == "自治区直辖县级行政区划" {
+			name == "省直辖县级行政区划" || name == "自治区直辖县级行政区划" {
 			if name == "市辖区" {
 				fOut.WriteString("\t\t<item>" + province + "</item>" + "\n")
 			}
@@ -132,7 +133,7 @@ func saveCounty(line []byte) {
 	fCodeOut, _ := os.OpenFile(outputCodeFileName, os.O_APPEND, 0)
 	defer fCodeOut.Close()
 	code, name := getCodeAndName(line)
-	if code % 10000 == 0 {
+	if code%10000 == 0 {
 		province = name
 		isDirectCity = false
 		if code != 110000 {
@@ -141,13 +142,13 @@ func saveCounty(line []byte) {
 		isFirstCity = true
 		fCodeOut.WriteString("\nprivate int[] " + name + " = {")
 	}
-	isCity := code % 10000 != 0 && code % 100 == 0
+	isCity := code%10000 != 0 && code%100 == 0
 	if isCity || isDirectCity {
 		if code != 110100 && name != "县" && name != "省直辖县级行政区划" && name != "自治区直辖县级行政区划" {
 			fOut.WriteString("\t</string-array>" + "\n\n")
 		}
 		if name == "市辖区" || name == "县" ||
-		name == "省直辖县级行政区划" || name == "自治区直辖县级行政区划" {
+			name == "省直辖县级行政区划" || name == "自治区直辖县级行政区划" {
 			if name == "市辖区" {
 				fOut.WriteString("\t<string-array name=\"" + province + name + "\">" + "\n")
 				if isFirstCity {
@@ -170,7 +171,7 @@ func saveCounty(line []byte) {
 			}
 		}
 	}
-	if code % 100 != 0 {
+	if code%100 != 0 {
 		if name != "市辖区" {
 			fOut.WriteString("\t\t<item>" + name + "</item>" + "\n")
 		}

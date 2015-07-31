@@ -19,9 +19,9 @@ func getsqrt(x float64) float64 {
 	z := x
 
 	temp := x / 2
-	for math.Abs(temp - z) > 0.000000001 {
+	for math.Abs(temp-z) > 0.000000001 {
 		temp = z
-		z = z - (z * z - x) / (2 * x)
+		z = z - (z*z-x)/(2*x)
 	}
 	return z
 }

@@ -1,15 +1,15 @@
 package main
 
 import (
+	"crypto/md5"
 	"fmt"
 	"html/template"
+	"io"
 	"log"
 	"math/rand"
 	"net/http"
-	"time"
 	"strconv"
-	"io"
-	"crypto/md5"
+	"time"
 )
 
 var num int16
@@ -28,7 +28,7 @@ func chifan(w http.ResponseWriter, r *http.Request) {
 		result := shop[rand.New(rand.NewSource(time.Now().UnixNano())).Intn(len(shop))]
 		//		fmt.Fprintf(w, "Hello there!\n") //这个写入到w的是输出到客户端的
 		//		fmt.Fprintf(w, "今天吃" + result + "吧！\n")
-		template.HTMLEscape(w, []byte("Hello there!\n今天吃" + result + "吧！\n"))
+		template.HTMLEscape(w, []byte("Hello there!\n今天吃"+result+"吧！\n"))
 		//		t, _ := template.ParseFiles("web_study\\generate.html")
 		//		t.Execute(w, nil)
 		//		r.Form.Set("submit", result)

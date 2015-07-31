@@ -15,7 +15,7 @@ func say(s string) {
 func main() {
 	Print("乱码用fmt就好了\n")
 	go say("world") //开一个新的Goroutines执行
-	say("hello") //当前Goroutines执行
+	say("hello")    //当前Goroutines执行
 	say("!")
 	Println(runtime.NumCPU())
 }
