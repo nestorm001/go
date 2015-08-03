@@ -2,14 +2,11 @@ package main
 
 import "fmt"
 
-func getSequence() func() func() int {
+func getSequence() (func() int) {
 	i := 0
-	return func() func() int {
+	return func() int {
 		i += 1
-		return func() int {
-			i += 1
-			return i
-		}
+		return i
 	}
 }
 

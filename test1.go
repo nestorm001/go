@@ -1,28 +1,36 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"time"
+)
 
-// fibonacci is a function that returns
-// a function that returns an int.
-func fibonacci() func() int {
-	var a int = 1
-	var b int = 0
-	var i int = 0
-	return func() int {
-		i++
-		if i == 1 {
-			return 0
-		} else {
-			c := a + b
-			a, b = b, c
-			return c
-		}
-	}
-}
+const LIM = 81
+
+var fibs [LIM]uint64
 
 func main() {
-	f := fibonacci()
-	for i := 0; i < 10; i++ {
-		fmt.Println(f())
+	var result uint64 = 0
+	start := time.Now()
+	for i := 0; i < LIM; i++ {
+		result = fibonacci(i)
+		fmt.Printf("fibonacci(%d) is: %d\n", i, result)
 	}
+	end := time.Now()
+	delta := end.Sub(start)
+	fmt.Printf("longCalculation took this amount of time: %s\n", delta)
+}
+func fibonacci(n int) (res uint64) {
+	// memoization: check if fibonacci(n) is already known in array:
+	if fibs[n] != 0 {
+		res = fibs[n]
+		return
+	}
+	if n <= 1 {
+		res = 1
+	} else {
+		res = fibonacci(n-1) + fibonacci(n-2)
+	}
+	fibs[n] = res
+	return
 }

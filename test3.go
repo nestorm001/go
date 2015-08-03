@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"time"
 )
 
 func fibonacci(n int, c chan int) {
@@ -14,9 +15,14 @@ func fibonacci(n int, c chan int) {
 }
 
 func main() {
-	c := make(chan int, 10)
+	start := time.Now()
+	c := make(chan int, 80)
 	go fibonacci(cap(c), c)
 	for i := range c {
 		fmt.Println(i)
 	}
+	end := time.Now()
+	delta := end.Sub(start)
+	fmt.Printf("longCalculation took this amount of time: %s\n", delta)
+
 }
