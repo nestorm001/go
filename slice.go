@@ -66,8 +66,22 @@ func main() {
 	numbers8 := numbers[2:4:7]
 	printSlice(numbers8)
 
-	numbers9 := numbers[:4]
+	numbers9 := numbers8[4:5]
 	printSlice(numbers9)
+}
+
+func AppendByte(slice []byte, data ...byte) []byte {
+	m := len(slice)
+	n := m + len(data)
+	if n > cap(slice) { // if necessary, reallocate
+		// allocate double what's needed, for future growth.
+		newSlice := make([]byte, (n+1)*2)
+		copy(newSlice, slice)
+		slice = newSlice
+	}
+	slice = slice[0:n]
+	copy(slice[m:n], data)
+	return slice
 }
 
 func printSlice(x []int) {
