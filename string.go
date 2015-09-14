@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 	"strings"
-	//"unicode/utf8"
+//"unicode/utf8"
 	"strconv"
 )
 
@@ -183,5 +183,9 @@ func main() {
 	fmt.Println("<item>" + result[1] + "</item>" + "\r")
 	stringLine := strings.Replace("659000	自治区直辖县级行政区划\r\n\r", "\r", "\n", -1)
 	fmt.Println(stringLine)
-	result = strings.Split(strings.Split(stringLine, "\n"), "	")
+
+
+	slice := strings.Split("http://pic3.zhimg.com/0df97d9f08b5fdf14838f58a780c1e6a_r.jpg", "/")
+	length := len(slice)
+	fmt.Println("./pictures/" + slice[length - 1])
 }

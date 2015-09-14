@@ -3,7 +3,7 @@ package main
 import (
 	_ "./eva"
 	"fmt"
-	. "github.com/PuerkitoBio/goquery"
+	."github.com/PuerkitoBio/goquery"
 	"github.com/davecgh/go-spew/spew"
 	"labix.org/v2/mgo"
 	"strings"
