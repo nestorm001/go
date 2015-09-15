@@ -8,14 +8,16 @@ import (
 	"os"
 	"strconv"
 	"strings"
+	"runtime"
 )
 
-const isTitleNeed = true
+const isFileNeed = false
 const fileName = "url.txt"
 const dirName = "./pictures/"
 const zhihu = "http://www.zhihu.com"
 const agreeNum = 30
 
+var quit chan int
 var allQuestions []string
 
 func getUrls(url string) {
@@ -34,6 +36,7 @@ func getUrls(url string) {
 			}
 		}
 	})
+	quit <- 0
 }
 
 func isUrlInSlice(url string) bool {
@@ -71,7 +74,7 @@ func getImgUrl(url string) {
 	slice := strings.Split(url, "/")
 	length := len(slice)
 	id := slice[length-1]
-	if isTitleNeed {
+	if isFileNeed {
 		writeImgUrl("<br><br><a href=" + url + ">" + name + "</a><br>" + "\n")
 	}
 	os.Mkdir(dirName+id, 0)
@@ -112,7 +115,9 @@ func getImgUrl(url string) {
 							temp = result
 							getImg("http:"+temp, id)
 							imgUrl := "http:" + temp;
-							writeImgUrl("<a href=" + imgUrl + ">" + imgUrl + "</a><br>" + "\n")
+							if isFileNeed {
+								writeImgUrl("<a href=" + imgUrl + ">" + imgUrl + "</a><br>" + "\n")
+							}
 						}
 					}
 				})
@@ -163,6 +168,10 @@ func main() {
 
 	//	getImgUrl("http://www.zhihu.com/question/20095161")
 
+	NCPU := runtime.NumCPU()
+	runtime.GOMAXPROCS(NCPU)
+	quit = make(chan int, NCPU)
+
 	urls := []string{
 		"http://www.zhihu.com/collection/45762052",
 		"http://www.zhihu.com/collection/71963247",
@@ -179,12 +188,18 @@ func main() {
 		"http://www.zhihu.com/collection/26815754",
 		"http://www.zhihu.com/collection/53719722",
 		"http://www.zhihu.com/collection/36731404",
-		"http://www.zhihu.com/collection/45762052",
+	}
+	if isFileNeed {
+		writeImgUrl("<html><head><meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"/><title>www.zhihu.com</title></head>")
+	}
+	for _, url := range urls {
+		go getUrls(url)
 	}
 
-	writeImgUrl("<html><head><meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"/><title>www.zhihu.com</title></head>")
-	for _, url := range urls {
-		getUrls(url)
+	for _, _ = range urls {
+		<-quit
 	}
-	writeImgUrl("</body></html>")
+	if isFileNeed {
+		writeImgUrl("</body></html>")
+	}
 }
