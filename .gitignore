@@ -26,6 +26,8 @@ _testmain.go
 *.test
 *.prof
 .idea
+
+/src
 *.iml
 
 pictures
