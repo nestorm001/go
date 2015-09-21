@@ -16,6 +16,7 @@ const fileName = "url.txt"
 const dirName = "./pictures/"
 const zhihu = "http://www.zhihu.com"
 const agreeNum = 30
+const page = "?page="
 
 var quit chan int
 var allQuestions []string
@@ -25,6 +26,15 @@ func getUrls(url string) {
 	fmt.Println(doc.Find("title").Text())
 	fmt.Println(url)
 	body := doc.Find("body")
+	next := body.Find("div.zm-invite-pager")
+	next.Find("span").Each(func(i int, s *goquery.Selection) {
+		if s.Text() == "下一页" {
+			nextUrl, exists := s.Find("a").Attr("href")
+			if exists {
+				go getUrls(strings.Split(url, "?")[0] + page + strings.Split(nextUrl, "=")[1])
+			}
+		}
+	})
 	body.Find("div.zm-item").Each(func(i int, s *goquery.Selection) {
 		h2 := s.Find("h2")
 		question_url, _ := h2.Find("a").Attr("href")
@@ -113,8 +123,8 @@ func getImgUrl(url string) {
 					if exists {
 						if result != temp {
 							temp = result
-							getImg("http:"+temp, id)
-							imgUrl := "http:" + temp;
+							getImg(temp, id)
+							imgUrl := temp;
 							if isFileNeed {
 								writeImgUrl("<a href=" + imgUrl + ">" + imgUrl + "</a><br>" + "\n")
 							}
@@ -169,7 +179,7 @@ func main() {
 	//	getImgUrl("http://www.zhihu.com/question/20095161")
 
 	NCPU := runtime.NumCPU()
-	runtime.GOMAXPROCS(NCPU)
+	runtime.GOMAXPROCS(NCPU - 1)
 	quit = make(chan int, NCPU)
 
 	urls := []string{
@@ -188,6 +198,7 @@ func main() {
 		"http://www.zhihu.com/collection/26815754",
 		"http://www.zhihu.com/collection/53719722",
 		"http://www.zhihu.com/collection/36731404",
+		"http://www.zhihu.com/collection/25971719",
 	}
 	if isFileNeed {
 		writeImgUrl("<html><head><meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"/><title>www.zhihu.com</title></head>")
