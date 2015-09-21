@@ -179,7 +179,7 @@ func main() {
 	//	getImgUrl("http://www.zhihu.com/question/20095161")
 
 	NCPU := runtime.NumCPU()
-	runtime.GOMAXPROCS(NCPU - 1)
+	runtime.GOMAXPROCS(NCPU)
 	quit = make(chan int, NCPU)
 
 	urls := []string{
