@@ -1,0 +1,474 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources
+		xmlns:tools="http://schemas.android.com/tools"
+		tools:ignore="MissingTranslation">
+	<string-array name="北京市code">
+		<item>110100</item>
+	</string-array>
+
+	<string-array name="天津市code">
+		<item>120100</item>
+	</string-array>
+
+	<string-array name="河北省code">
+		<item>130100</item>
+		<item>130200</item>
+		<item>130300</item>
+		<item>130400</item>
+		<item>130500</item>
+		<item>130600</item>
+		<item>130700</item>
+		<item>130800</item>
+		<item>130900</item>
+		<item>131000</item>
+		<item>131100</item>
+		<item>139001</item>
+		<item>139002</item>
+	</string-array>
+
+	<string-array name="山西省code">
+		<item>140100</item>
+		<item>140200</item>
+		<item>140300</item>
+		<item>140400</item>
+		<item>140500</item>
+		<item>140600</item>
+		<item>140700</item>
+		<item>140800</item>
+		<item>140900</item>
+		<item>141000</item>
+		<item>141100</item>
+	</string-array>
+
+	<string-array name="内蒙古自治区code">
+		<item>150100</item>
+		<item>150200</item>
+		<item>150300</item>
+		<item>150400</item>
+		<item>150500</item>
+		<item>150600</item>
+		<item>150700</item>
+		<item>150800</item>
+		<item>150900</item>
+		<item>152200</item>
+		<item>152500</item>
+		<item>152900</item>
+	</string-array>
+
+	<string-array name="辽宁省code">
+		<item>210100</item>
+		<item>210200</item>
+		<item>210300</item>
+		<item>210400</item>
+		<item>210500</item>
+		<item>210600</item>
+		<item>210700</item>
+		<item>210800</item>
+		<item>210900</item>
+		<item>211000</item>
+		<item>211100</item>
+		<item>211200</item>
+		<item>211300</item>
+		<item>211400</item>
+	</string-array>
+
+	<string-array name="吉林省code">
+		<item>220100</item>
+		<item>220200</item>
+		<item>220300</item>
+		<item>220400</item>
+		<item>220500</item>
+		<item>220600</item>
+		<item>220700</item>
+		<item>220800</item>
+		<item>222400</item>
+	</string-array>
+
+	<string-array name="黑龙江省code">
+		<item>230100</item>
+		<item>230200</item>
+		<item>230300</item>
+		<item>230400</item>
+		<item>230500</item>
+		<item>230600</item>
+		<item>230700</item>
+		<item>230800</item>
+		<item>230900</item>
+		<item>231000</item>
+		<item>231100</item>
+		<item>231200</item>
+		<item>232700</item>
+	</string-array>
+
+	<string-array name="上海市code">
+		<item>310100</item>
+	</string-array>
+
+	<string-array name="江苏省code">
+		<item>320100</item>
+		<item>320200</item>
+		<item>320300</item>
+		<item>320400</item>
+		<item>320500</item>
+		<item>320600</item>
+		<item>320700</item>
+		<item>320800</item>
+		<item>320900</item>
+		<item>321000</item>
+		<item>321100</item>
+		<item>321200</item>
+		<item>321300</item>
+	</string-array>
+
+	<string-array name="浙江省code">
+		<item>330100</item>
+		<item>330200</item>
+		<item>330300</item>
+		<item>330400</item>
+		<item>330500</item>
+		<item>330600</item>
+		<item>330700</item>
+		<item>330800</item>
+		<item>330900</item>
+		<item>331000</item>
+		<item>331100</item>
+	</string-array>
+
+	<string-array name="安徽省code">
+		<item>340100</item>
+		<item>340200</item>
+		<item>340300</item>
+		<item>340400</item>
+		<item>340500</item>
+		<item>340600</item>
+		<item>340700</item>
+		<item>340800</item>
+		<item>341000</item>
+		<item>341100</item>
+		<item>341200</item>
+		<item>341300</item>
+		<item>341500</item>
+		<item>341600</item>
+		<item>341700</item>
+		<item>341800</item>
+	</string-array>
+
+	<string-array name="福建省code">
+		<item>350100</item>
+		<item>350200</item>
+		<item>350300</item>
+		<item>350400</item>
+		<item>350500</item>
+		<item>350600</item>
+		<item>350700</item>
+		<item>350800</item>
+		<item>350900</item>
+	</string-array>
+
+	<string-array name="江西省code">
+		<item>360100</item>
+		<item>360200</item>
+		<item>360300</item>
+		<item>360400</item>
+		<item>360500</item>
+		<item>360600</item>
+		<item>360700</item>
+		<item>360800</item>
+		<item>360900</item>
+		<item>361000</item>
+		<item>361100</item>
+	</string-array>
+
+	<string-array name="山东省code">
+		<item>370100</item>
+		<item>370200</item>
+		<item>370300</item>
+		<item>370400</item>
+		<item>370500</item>
+		<item>370600</item>
+		<item>370700</item>
+		<item>370800</item>
+		<item>370900</item>
+		<item>371000</item>
+		<item>371100</item>
+		<item>371200</item>
+		<item>371300</item>
+		<item>371400</item>
+		<item>371500</item>
+		<item>371600</item>
+		<item>371700</item>
+	</string-array>
+
+	<string-array name="河南省code">
+		<item>410100</item>
+		<item>410200</item>
+		<item>410300</item>
+		<item>410400</item>
+		<item>410500</item>
+		<item>410600</item>
+		<item>410700</item>
+		<item>410800</item>
+		<item>410900</item>
+		<item>411000</item>
+		<item>411100</item>
+		<item>411200</item>
+		<item>411300</item>
+		<item>411400</item>
+		<item>411500</item>
+		<item>411600</item>
+		<item>411700</item>
+		<item>419001</item>
+	</string-array>
+
+	<string-array name="湖北省code">
+		<item>420100</item>
+		<item>420200</item>
+		<item>420300</item>
+		<item>420500</item>
+		<item>420600</item>
+		<item>420700</item>
+		<item>420800</item>
+		<item>420900</item>
+		<item>421000</item>
+		<item>421100</item>
+		<item>421200</item>
+		<item>421300</item>
+		<item>422800</item>
+		<item>429004</item>
+		<item>429005</item>
+		<item>429006</item>
+		<item>429021</item>
+	</string-array>
+
+	<string-array name="湖南省code">
+		<item>430100</item>
+		<item>430200</item>
+		<item>430300</item>
+		<item>430400</item>
+		<item>430500</item>
+		<item>430600</item>
+		<item>430700</item>
+		<item>430800</item>
+		<item>430900</item>
+		<item>431000</item>
+		<item>431100</item>
+		<item>431200</item>
+		<item>431300</item>
+		<item>433100</item>
+	</string-array>
+
+	<string-array name="广东省code">
+		<item>440100</item>
+		<item>440200</item>
+		<item>440300</item>
+		<item>440400</item>
+		<item>440500</item>
+		<item>440600</item>
+		<item>440700</item>
+		<item>440800</item>
+		<item>440900</item>
+		<item>441200</item>
+		<item>441300</item>
+		<item>441400</item>
+		<item>441500</item>
+		<item>441600</item>
+		<item>441700</item>
+		<item>441800</item>
+		<item>441900</item>
+		<item>442000</item>
+		<item>445100</item>
+		<item>445200</item>
+		<item>445300</item>
+	</string-array>
+
+	<string-array name="广西壮族自治区code">
+		<item>450100</item>
+		<item>450200</item>
+		<item>450300</item>
+		<item>450400</item>
+		<item>450500</item>
+		<item>450600</item>
+		<item>450700</item>
+		<item>450800</item>
+		<item>450900</item>
+		<item>451000</item>
+		<item>451100</item>
+		<item>451200</item>
+		<item>451300</item>
+		<item>451400</item>
+	</string-array>
+
+	<string-array name="海南省code">
+		<item>460100</item>
+		<item>460200</item>
+		<item>460300</item>
+		<item>469001</item>
+		<item>469002</item>
+		<item>469003</item>
+		<item>469005</item>
+		<item>469006</item>
+		<item>469007</item>
+		<item>469021</item>
+		<item>469022</item>
+		<item>469023</item>
+		<item>469024</item>
+		<item>469025</item>
+		<item>469026</item>
+		<item>469027</item>
+		<item>469028</item>
+		<item>469029</item>
+		<item>469030</item>
+	</string-array>
+
+	<string-array name="重庆市code">
+		<item>500100</item>
+	</string-array>
+
+	<string-array name="四川省code">
+		<item>510100</item>
+		<item>510300</item>
+		<item>510400</item>
+		<item>510500</item>
+		<item>510600</item>
+		<item>510700</item>
+		<item>510800</item>
+		<item>510900</item>
+		<item>511000</item>
+		<item>511100</item>
+		<item>511300</item>
+		<item>511400</item>
+		<item>511500</item>
+		<item>511600</item>
+		<item>511700</item>
+		<item>511800</item>
+		<item>511900</item>
+		<item>512000</item>
+		<item>513200</item>
+		<item>513300</item>
+		<item>513400</item>
+	</string-array>
+
+	<string-array name="贵州省code">
+		<item>520100</item>
+		<item>520200</item>
+		<item>520300</item>
+		<item>520400</item>
+		<item>520500</item>
+		<item>520600</item>
+		<item>522300</item>
+		<item>522600</item>
+		<item>522700</item>
+	</string-array>
+
+	<string-array name="云南省code">
+		<item>530100</item>
+		<item>530300</item>
+		<item>530400</item>
+		<item>530500</item>
+		<item>530600</item>
+		<item>530700</item>
+		<item>530800</item>
+		<item>530900</item>
+		<item>532300</item>
+		<item>532500</item>
+		<item>532600</item>
+		<item>532800</item>
+		<item>532900</item>
+		<item>533100</item>
+		<item>533300</item>
+		<item>533400</item>
+	</string-array>
+
+	<string-array name="西藏自治区code">
+		<item>540100</item>
+		<item>540200</item>
+		<item>542100</item>
+		<item>542200</item>
+		<item>542400</item>
+		<item>542500</item>
+		<item>542600</item>
+	</string-array>
+
+	<string-array name="陕西省code">
+		<item>610100</item>
+		<item>610200</item>
+		<item>610300</item>
+		<item>610400</item>
+		<item>610500</item>
+		<item>610600</item>
+		<item>610700</item>
+		<item>610800</item>
+		<item>610900</item>
+		<item>611000</item>
+	</string-array>
+
+	<string-array name="甘肃省code">
+		<item>620100</item>
+		<item>620200</item>
+		<item>620300</item>
+		<item>620400</item>
+		<item>620500</item>
+		<item>620600</item>
+		<item>620700</item>
+		<item>620800</item>
+		<item>620900</item>
+		<item>621000</item>
+		<item>621100</item>
+		<item>621200</item>
+		<item>622900</item>
+		<item>623000</item>
+	</string-array>
+
+	<string-array name="青海省code">
+		<item>630100</item>
+		<item>630200</item>
+		<item>632200</item>
+		<item>632300</item>
+		<item>632500</item>
+		<item>632600</item>
+		<item>632700</item>
+		<item>632800</item>
+	</string-array>
+
+	<string-array name="宁夏回族自治区code">
+		<item>640100</item>
+		<item>640200</item>
+		<item>640300</item>
+		<item>640400</item>
+		<item>640500</item>
+	</string-array>
+
+	<string-array name="新疆维吾尔自治区code">
+		<item>650100</item>
+		<item>650200</item>
+		<item>652100</item>
+		<item>652200</item>
+		<item>652300</item>
+		<item>652700</item>
+		<item>652800</item>
+		<item>652900</item>
+		<item>653000</item>
+		<item>653100</item>
+		<item>653200</item>
+		<item>654000</item>
+		<item>654200</item>
+		<item>654300</item>
+		<item>659001</item>
+		<item>659002</item>
+		<item>659003</item>
+		<item>659004</item>
+	</string-array>
+
+	<string-array name="台湾省code">
+		<item>711000</item>
+	</string-array>
+
+	<string-array name="香港特别行政区code">
+		<item>811000</item>
+	</string-array>
+
+	<string-array name="澳门特别行政区code">
+		<item>821000</item>
+	</string-array>
+
+</resources>

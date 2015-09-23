@@ -8,8 +8,9 @@ import (
 	"strings"
 )
 
-const outputFileName = "address.xml"
-const outputCodeFileName = "javaCode.txt"
+const addressFile = "address.xml"
+const addressCodeFile = "addressCode.xml"
+const javaCodeFile = "javaCode.txt"
 const openFileName = "GB2260.txt"
 
 var province string
@@ -44,11 +45,11 @@ func getCodeAndName(line []byte) (code int, name string) {
 }
 
 func getProvince() {
-	fCodeOut, _ := os.OpenFile(outputCodeFileName, os.O_APPEND, 0)
+	fCodeOut, _ := os.OpenFile(javaCodeFile, os.O_APPEND, 0)
 	defer fCodeOut.Close()
 	fCodeOut.WriteString("private int[] city = {")
 
-	fOut, _ := os.OpenFile(outputFileName, os.O_APPEND, 0)
+	fOut, _ := os.OpenFile(addressFile, os.O_APPEND, 0)
 	defer fOut.Close()
 	fOut.WriteString("\n\t<!-- 省级 -->" + "\n")
 	fOut.WriteString("\t<string-array name=\"省\">" + "\n")
@@ -59,10 +60,11 @@ func getProvince() {
 
 	fCodeOut.WriteString("\n};\n")
 }
+
 func saveProvince(line []byte) {
-	fOut, _ := os.OpenFile(outputFileName, os.O_APPEND, 0)
+	fOut, _ := os.OpenFile(addressFile, os.O_APPEND, 0)
 	defer fOut.Close()
-	fCodeOut, _ := os.OpenFile(outputCodeFileName, os.O_APPEND, 0)
+	fCodeOut, _ := os.OpenFile(javaCodeFile, os.O_APPEND, 0)
 	defer fCodeOut.Close()
 	code, name := getCodeAndName(line)
 	if code%10000 == 0 {
@@ -81,46 +83,53 @@ func saveProvince(line []byte) {
 }
 
 func getCity() {
-	fOut, _ := os.OpenFile(outputFileName, os.O_APPEND, 0)
+	fOut, _ := os.OpenFile(addressFile, os.O_APPEND, 0)
 	defer fOut.Close()
+	fCodeOut, _ := os.OpenFile(addressCodeFile, os.O_APPEND, 0)
+	defer fCodeOut.Close()
 	fOut.WriteString("\n\t<!-- 市级 -->" + "\n")
 	ReadLine(openFileName, saveCity)
 	fOut.WriteString("\t</string-array>" + "\n\n")
+	fCodeOut.WriteString("\t</string-array>" + "\n\n")
 }
 func saveCity(line []byte) {
-	fOut, _ := os.OpenFile(outputFileName, os.O_APPEND, 0)
+	fOut, _ := os.OpenFile(addressFile, os.O_APPEND, 0)
 	defer fOut.Close()
-	fCodeOut, _ := os.OpenFile(outputCodeFileName, os.O_APPEND, 0)
+	fCodeOut, _ := os.OpenFile(addressCodeFile, os.O_APPEND, 0)
 	defer fCodeOut.Close()
 	code, name := getCodeAndName(line)
 	if code%10000 == 0 {
 		if code != 110000 {
 			fOut.WriteString("\t</string-array>" + "\n\n")
+			fCodeOut.WriteString("\t</string-array>" + "\n\n")
 		}
 		fOut.WriteString("\t<string-array name=\"" + name + "\">" + "\n")
+		fCodeOut.WriteString("\t<string-array name=\"" + name + "code" + "\">" + "\n")
 		isDirectCity = false
 		province = name
 	}
 	isCity := code%10000 != 0 && code%100 == 0
 	if isCity || isDirectCity {
 		if name == "市辖区" || name == "县" ||
-			name == "省直辖县级行政区划" || name == "自治区直辖县级行政区划" {
+		name == "省直辖县级行政区划" || name == "自治区直辖县级行政区划" {
 			if name == "市辖区" {
 				fOut.WriteString("\t\t<item>" + province + "</item>" + "\n")
+				fCodeOut.WriteString("\t\t<item>" + strconv.Itoa(code) + "</item>" + "\n")
 			}
 			if name == "省直辖县级行政区划" || name == "自治区直辖县级行政区划" {
 				isDirectCity = true
 			}
 		} else {
 			fOut.WriteString("\t\t<item>" + name + "</item>" + "\n")
+			fCodeOut.WriteString("\t\t<item>" + strconv.Itoa(code) + "</item>" + "\n")
 		}
 	}
 }
 
 func getCounty() {
-	fOut, _ := os.OpenFile(outputFileName, os.O_APPEND, 0)
+	fOut, _ := os.OpenFile(addressFile, os.O_APPEND, 0)
 	defer fOut.Close()
-	fCodeOut, _ := os.OpenFile(outputCodeFileName, os.O_APPEND, 0)
+	fCodeOut, _ := os.OpenFile(javaCodeFile, os.O_APPEND, 0)
 	defer fCodeOut.Close()
 	fOut.WriteString("\n\t<!-- 区县级 -->" + "\n")
 	ReadLine(openFileName, saveCounty)
@@ -128,9 +137,9 @@ func getCounty() {
 	fCodeOut.WriteString("\n};\n")
 }
 func saveCounty(line []byte) {
-	fOut, _ := os.OpenFile(outputFileName, os.O_APPEND, 0)
+	fOut, _ := os.OpenFile(addressFile, os.O_APPEND, 0)
 	defer fOut.Close()
-	fCodeOut, _ := os.OpenFile(outputCodeFileName, os.O_APPEND, 0)
+	fCodeOut, _ := os.OpenFile(javaCodeFile, os.O_APPEND, 0)
 	defer fCodeOut.Close()
 	code, name := getCodeAndName(line)
 	if code%10000 == 0 {
@@ -148,7 +157,7 @@ func saveCounty(line []byte) {
 			fOut.WriteString("\t</string-array>" + "\n\n")
 		}
 		if name == "市辖区" || name == "县" ||
-			name == "省直辖县级行政区划" || name == "自治区直辖县级行政区划" {
+		name == "省直辖县级行政区划" || name == "自治区直辖县级行政区划" {
 			if name == "市辖区" {
 				fOut.WriteString("\t<string-array name=\"" + province + name + "\">" + "\n")
 				if isFirstCity {
@@ -179,18 +188,27 @@ func saveCounty(line []byte) {
 }
 
 func main() {
-	os.Remove(outputFileName)
-	os.Create(outputFileName)
-	os.Remove(outputCodeFileName)
-	os.Create(outputCodeFileName)
-	fOut, _ := os.OpenFile(outputFileName, os.O_APPEND, 0)
+	os.Remove(addressFile)
+	os.Create(addressFile)
+	os.Remove(addressCodeFile)
+	os.Create(addressCodeFile)
+	os.Remove(javaCodeFile)
+	os.Create(javaCodeFile)
+	fOut, _ := os.OpenFile(addressFile, os.O_APPEND, 0)
 	defer fOut.Close()
+	fCodeOut, _ := os.OpenFile(addressCodeFile, os.O_APPEND, 0)
+	defer fCodeOut.Close()
 	fOut.WriteString("<?xml version=\"1.0\" encoding=\"utf-8\"?>" + "\n")
 	fOut.WriteString("<resources" + "\n")
 	fOut.WriteString("\t\txmlns:tools=\"http://schemas.android.com/tools\"" + "\n")
 	fOut.WriteString("\t\ttools:ignore=\"MissingTranslation\">" + "\n")
+	fCodeOut.WriteString("<?xml version=\"1.0\" encoding=\"utf-8\"?>" + "\n")
+	fCodeOut.WriteString("<resources" + "\n")
+	fCodeOut.WriteString("\t\txmlns:tools=\"http://schemas.android.com/tools\"" + "\n")
+	fCodeOut.WriteString("\t\ttools:ignore=\"MissingTranslation\">" + "\n")
 	getProvince()
 	getCity()
 	getCounty()
 	fOut.WriteString("</resources>" + "\n")
+	fCodeOut.WriteString("</resources>" + "\n")
 }

@@ -15,6 +15,7 @@ const isFileNeed = false
 const fileName = "url.txt"
 const dirName = "./pictures/"
 const zhihu = "http://www.zhihu.com"
+const zhihuCollection = "http://www.zhihu.com/collection/"
 const agreeNum = 30
 const page = "?page="
 
@@ -183,28 +184,33 @@ func main() {
 	quit = make(chan int, NCPU)
 
 	urls := []string{
-		"http://www.zhihu.com/collection/45762052",
-		"http://www.zhihu.com/collection/71963247",
-		"http://www.zhihu.com/collection/71964476",
-		"http://www.zhihu.com/collection/71977517",
-		"http://www.zhihu.com/collection/71964508",
-		"http://www.zhihu.com/collection/71578326",
-		"http://www.zhihu.com/collection/60771406",
-		"http://www.zhihu.com/collection/30256531",
-		"http://www.zhihu.com/collection/30822111",
-		"http://www.zhihu.com/collection/38624707",
-		"http://www.zhihu.com/collection/26347524",
-		"http://www.zhihu.com/collection/26348030",
-		"http://www.zhihu.com/collection/26815754",
-		"http://www.zhihu.com/collection/53719722",
-		"http://www.zhihu.com/collection/36731404",
-		"http://www.zhihu.com/collection/25971719",
+		"25971719",
+		"26347524",
+		"26348030",
+		"26815754",
+		"30256531",
+		"30822111",
+		"36731404",
+		"38624707",
+		"45762052",
+		"53719722",
+		"60771406",
+		"71578326",
+		"71963247",
+		"71964476",
+		"71964508",
+		"71964729",
+		"71977517",
+		"72107092",
+		"72108007",
+		"72869482",
+		"72871358",
 	}
 	if isFileNeed {
 		writeImgUrl("<html><head><meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"/><title>www.zhihu.com</title></head>")
 	}
 	for _, url := range urls {
-		go getUrls(url)
+		go getUrls(zhihuCollection + url)
 	}
 
 	for _, _ = range urls {
