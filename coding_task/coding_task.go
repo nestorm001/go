@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"github.com/bitly/go-simplejson"
 	"io/ioutil"
 	"net/http"
 	"net/url"
@@ -11,50 +12,74 @@ import (
 const title = "猴子真坑"
 const userName = "nesto"
 const password = "e0efb1d23aa3e98057630a7fb44aa1e759a24294"
-const projectName = "monkey"
+const projectName = "not-auto-monkey"
 const ownerId = "99239"
 const coding = "https://coding.net/api"
-const task_url = "/user/" + userName + "/project/" + projectName + "/task"
-const login_url = "/account/login"
-const captcha_url = "/account/captcha/login"
+const task_url = coding + "/user/" + userName + "/project/" + projectName + "/task"
+const login_url = coding + "/account/login"
+const captcha_url = coding + "/account/captcha/login"
+const file_url = coding + "/user/" + userName + "/project/" + projectName + "/git/edit/master/README.md"
+const file = coding + "/user/" + userName + "/project/" + projectName + "/git/upload/master/README.md"
+
+var jar = NewJar()
+var client = http.Client{Jar: jar}
 
 func main() {
-	//captcha
-	jar := NewJar()
-	client := http.Client{Jar: jar}
+		task()
+//	commit()
+}
 
-	req, _ := http.NewRequest("GET", coding+captcha_url, nil)
+func login() {
+	//captcha
+	req, _ := http.NewRequest("GET", captcha_url, nil)
 	resp, _ := client.Do(req)
-	b, _ := ioutil.ReadAll(resp.Body)
 	resp.Body.Close()
-	fmt.Println(string(b))
 
 	//login
-	resp, _ = client.PostForm(coding+login_url, url.Values{
-		"email":      {userName},
-		"password":       {password},
+	resp, _ = client.PostForm(login_url, url.Values{
+		"email":       {userName},
+		"password":    {password},
+		"remember_me": {"true"},
 	})
-	b, _ = ioutil.ReadAll(resp.Body)
 	resp.Body.Close()
-	fmt.Println(string(b))
+}
 
-	cookies := resp.Cookies()
-	for _, cookie := range cookies {
-		fmt.Println("cookie:", cookie.Value)
-	}
-
+func task() {
+	login()
 	//task
-	resp, _ = client.PostForm(coding+task_url, url.Values{
+	resp, _ := client.PostForm(task_url, url.Values{
 		"content":      {title},
 		"status":       {"1"},
 		"user_name":    {userName},
 		"project_name": {projectName},
-		"owner_id": {ownerId},
+		"owner_id":     {ownerId},
+	})
+	resp.Body.Close()
+}
+
+func commit() {
+	login()
+
+	//commit and push
+	fmt.Println(file_url)
+	req, _ := http.NewRequest("GET", file_url, nil)
+	resp, _ := client.Do(req)
+	b, _ := ioutil.ReadAll(resp.Body)
+	resp.Body.Close()
+	js, _ := simplejson.NewJson(b)
+	s, _ := js.Get("data").Get("file").Get("lastCommitId").String()
+	fmt.Println("commitId: " + s)
+
+	login()
+	resp, _ = client.PostForm(file, url.Values{
+		"content":  {title},
+		"fullMessage":  {title},
+		"commitId": {s},
 	})
 	b, _ = ioutil.ReadAll(resp.Body)
 	resp.Body.Close()
-
 	fmt.Println(string(b))
+
 }
 
 type Jar struct {
