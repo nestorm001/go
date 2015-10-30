@@ -21,7 +21,7 @@ func b(data string) string {
 }
 
 func main() {
-	var data string = "hahaha";
+	var data string = "test";
 	fmt.Printf("MD5 : %s\n", a(data));
 	fmt.Printf("SHA1 : %s\n", b(data));
 }
