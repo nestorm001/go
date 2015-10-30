@@ -11,12 +11,13 @@ import (
 	"strings"
 )
 
-const task_title = "猴子真坑"
-const commit_title = "自动提交"
 const userName = "nesto"
 const password = "e0efb1d23aa3e98057630a7fb44aa1e759a24294"
 const projectName = "not-auto-monkey"
 const ownerId = "99239"
+
+const task_title = "猴子真坑"
+const commit_title = "自动提交"
 const coding = "https://coding.net/api"
 const task_url = coding + "/user/" + userName + "/project/" + projectName + "/task"
 const login_url = coding + "/account/login"
