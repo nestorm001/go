@@ -35,8 +35,6 @@ func login() {
 	//captcha
 	req, _ := http.NewRequest("GET", captcha_url, nil)
 	resp, _ := client.Do(req)
-	b, _ := ioutil.ReadAll(resp.Body)
-	fmt.Println(string(b))
 	resp.Body.Close()
 
 	//login
@@ -45,9 +43,7 @@ func login() {
 		"password":    {password},
 		"remember_me": {"true"},
 	})
-	b, _ = ioutil.ReadAll(resp.Body)
 	resp.Body.Close()
-	fmt.Println(string(b))
 }
 
 func task() {
@@ -61,8 +57,6 @@ func task() {
 		"project_name": {projectName},
 		"owner_id":     {ownerId},
 	})
-	b, _ := ioutil.ReadAll(resp.Body)
-	fmt.Println(string(b))
 	resp.Body.Close()
 }
 
@@ -76,7 +70,7 @@ func commit() {
 	b, _ := ioutil.ReadAll(resp.Body)
 	resp.Body.Close()
 	js, _ := simplejson.NewJson(b)
-	s, _ := js.Get("data").Get("file").Get("lastCommitId").String()
+	s, _ := js.Get("data").Get("lastCommit").String()
 	content, _ := js.Get("data").Get("file").Get("data").String()
 	fmt.Println("commitId: " + s)
 
@@ -124,3 +118,4 @@ func (jar *Jar) SetCookies(u *url.URL, cookies []*http.Cookie) {
 func (jar *Jar) Cookies(u *url.URL) []*http.Cookie {
 	return jar.cookies[u.Host]
 }
+

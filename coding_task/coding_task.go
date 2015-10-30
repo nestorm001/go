@@ -71,7 +71,7 @@ func commit() {
 	b, _ := ioutil.ReadAll(resp.Body)
 	resp.Body.Close()
 	js, _ := simplejson.NewJson(b)
-	s, _ := js.Get("data").Get("file").Get("lastCommitId").String()
+	s, _ := js.Get("data").Get("lastCommit").String()
 	content, _ := js.Get("data").Get("file").Get("data").String()
 	fmt.Println("commitId: " + s)
 

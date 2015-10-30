@@ -37,7 +37,8 @@ func main() {
 	shutdownSeconds := 17*3600 + 35*60
 	timeToShutdown := shutdownSeconds - nowSeconds
 	if timeToShutdown < 0 {
-		cmd := exec.Command("cmd.exe", "/c", "shutdown -f")
+//		cmd := exec.Command("cmd.exe", "/c", "shutdown -f")
+		cmd := exec.Command("cmd.exe", "/c", "shutdown -s -t 120")
 		cmd.Run()
 	} else {
 		cmd := exec.Command("cmd.exe", "/c", "shutdown -s -t", strconv.Itoa(timeToShutdown))
