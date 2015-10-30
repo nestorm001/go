@@ -7,9 +7,12 @@ import (
 	"net/http"
 	"net/url"
 	"sync"
+	"time"
+	"strings"
 )
 
-const title = "猴子真坑"
+const task_title = "猴子真坑"
+const commit_title = "自动提交"
 const userName = "nesto"
 const password = "e0efb1d23aa3e98057630a7fb44aa1e759a24294"
 const projectName = "not-auto-monkey"
@@ -18,15 +21,14 @@ const coding = "https://coding.net/api"
 const task_url = coding + "/user/" + userName + "/project/" + projectName + "/task"
 const login_url = coding + "/account/login"
 const captcha_url = coding + "/account/captcha/login"
-const file_url = coding + "/user/" + userName + "/project/" + projectName + "/git/edit/master/README.md"
-const file = coding + "/user/" + userName + "/project/" + projectName + "/git/upload/master/README.md"
+const file_url = coding + "/user/" + userName + "/project/" + projectName + "/git/edit/master%252FREADME.md"
 
 var jar = NewJar()
 var client = http.Client{Jar: jar}
 
 func main() {
-		task()
-//	commit()
+	task()
+	commit()
 }
 
 func login() {
@@ -47,8 +49,9 @@ func login() {
 func task() {
 	login()
 	//task
+	fmt.Println(jar.cookies)
 	resp, _ := client.PostForm(task_url, url.Values{
-		"content":      {title},
+		"content":      {task_title},
 		"status":       {"1"},
 		"user_name":    {userName},
 		"project_name": {projectName},
@@ -68,13 +71,20 @@ func commit() {
 	resp.Body.Close()
 	js, _ := simplejson.NewJson(b)
 	s, _ := js.Get("data").Get("file").Get("lastCommitId").String()
+	content, _ := js.Get("data").Get("file").Get("data").String()
 	fmt.Println("commitId: " + s)
 
 	login()
-	resp, _ = client.PostForm(file, url.Values{
-		"content":  {title},
-		"fullMessage":  {title},
-		"commitId": {s},
+	today := time.Now().Format("2006-01-02")
+	if !strings.Contains(content, today) {
+		content = content + "\n# " + today
+	}
+	//	fmt.Println("content: " + content)
+
+	resp, _ = client.PostForm(file_url, url.Values{
+		"content":  {content},
+		"message":  {commit_title},
+		"lastCommitSha": {s},
 	})
 	b, _ = ioutil.ReadAll(resp.Body)
 	resp.Body.Close()
