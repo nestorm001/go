@@ -104,7 +104,6 @@ func isPushedToday() bool {
 	b, _ := ioutil.ReadAll(resp.Body)
 	resp.Body.Close()
 	js, _ := simplejson.NewJson(b)
-	s, _ := js.Get("data").Get("lastCommit").String()
 	content, _ := js.Get("data").Get("file").Get("data").String()
 	today := time.Now().Format("2006-01-02")
 	return strings.Contains(content, today)
