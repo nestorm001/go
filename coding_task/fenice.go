@@ -27,8 +27,10 @@ var jar = NewJar()
 var client = http.Client{Jar: jar}
 
 func main() {
-	task()
-	commit()
+	if !isPushedToday() {
+		//		task()
+		commit()
+	}
 }
 
 func login() {
@@ -90,6 +92,22 @@ func commit() {
 	resp.Body.Close()
 	fmt.Println(string(b))
 
+}
+
+func isPushedToday() bool {
+	login()
+
+	//commit and push
+	fmt.Println(file_url)
+	req, _ := http.NewRequest("GET", file_url, nil)
+	resp, _ := client.Do(req)
+	b, _ := ioutil.ReadAll(resp.Body)
+	resp.Body.Close()
+	js, _ := simplejson.NewJson(b)
+	s, _ := js.Get("data").Get("lastCommit").String()
+	content, _ := js.Get("data").Get("file").Get("data").String()
+	today := time.Now().Format("2006-01-02")
+	return strings.Contains(content, today)
 }
 
 type Jar struct {
