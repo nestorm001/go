@@ -28,7 +28,7 @@ var client = http.Client{Jar: jar}
 
 func main() {
 	if !isPushedToday() {
-		//		task()
+		task()
 		commit()
 	}
 }
