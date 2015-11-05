@@ -28,9 +28,34 @@ var jar = NewJar()
 var client = http.Client{Jar: jar}
 
 func main() {
+	for !netTest() {}
+	mainProcess()
+	time.Sleep(3*time.Second)
+}
+
+func mainProcess() {
 	if !isPushedToday() {
 		task()
 		commit()
+	} else {
+		fmt.Println("今天已提交过")
+	}
+}
+
+func netTest() bool {
+	req, _ := http.NewRequest("GET", captcha_url, nil)
+	resp, err := client.Do(req)
+
+	if err != nil {
+		fmt.Println("出现了问题，稍后重试")
+		for i := 0; i < 11; i++ {
+			fmt.Println(10 - i)
+			time.Sleep(time.Second)
+		}
+		return false
+	} else {
+		resp.Body.Close()
+		return true
 	}
 }
 
@@ -38,6 +63,7 @@ func login() {
 	//captcha
 	req, _ := http.NewRequest("GET", captcha_url, nil)
 	resp, _ := client.Do(req)
+
 	resp.Body.Close()
 
 	//login
@@ -47,6 +73,7 @@ func login() {
 		"remember_me": {"true"},
 	})
 	resp.Body.Close()
+
 }
 
 func task() {
@@ -84,15 +111,23 @@ func commit() {
 	}
 	//	fmt.Println("content: " + content)
 
-	resp, _ = client.PostForm(file_url, url.Values{
+	resp, err := client.PostForm(file_url, url.Values{
 		"content":  {content},
 		"message":  {commit_title},
 		"lastCommitSha": {s},
 	})
-	b, _ = ioutil.ReadAll(resp.Body)
-	resp.Body.Close()
-	fmt.Println(string(b))
-
+	if err != nil {
+		panic(err)
+		mainProcess()
+	} else {
+		b, _ = ioutil.ReadAll(resp.Body)
+		result, _ := simplejson.NewJson(b)
+		resultMessage, _ := result.Get("message").Int()
+		if resultMessage == 0 {
+			fmt.Println("应该成功了")
+		}
+		resp.Body.Close()
+	}
 }
 
 func isPushedToday() bool {
