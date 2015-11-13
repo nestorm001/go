@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"time"
+	"github.com/astaxie/beego"
 )
 
 const LIM = 81
@@ -19,6 +20,8 @@ func main() {
 	end := time.Now()
 	delta := end.Sub(start)
 	fmt.Printf("longCalculation took this amount of time: %s\n", delta)
+	fmt.Println(time.RFC3339)
+	fmt.Println(beego.Substr(time.RFC3339, 0, 10))
 }
 func fibonacci(n int) (res uint64) {
 	// memoization: check if fibonacci(n) is already known in array:

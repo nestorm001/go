@@ -9,12 +9,14 @@ import (
 	"sync"
 	"time"
 	"strings"
+	"strconv"
 )
 
 const userName = "nesto"
 const password = "e0efb1d23aa3e98057630a7fb44aa1e759a24294"
 const projectName = "not-auto-monkey"
 const ownerId = "99239"
+
 
 const task_title = "猴子真坑"
 const commit_title = "自动提交"
@@ -23,9 +25,12 @@ const task_url = coding + "/user/" + userName + "/project/" + projectName + "/ta
 const login_url = coding + "/account/login"
 const captcha_url = coding + "/account/captcha/login"
 const file_url = coding + "/user/" + userName + "/project/" + projectName + "/git/edit/master%252FREADME.md"
+const merge_url = coding + "/user/" + userName + "/project/" + projectName + "/git/merge"
 
 var jar = NewJar()
 var client = http.Client{Jar: jar}
+
+var iid int
 
 func main() {
 	for !netTest() {}
@@ -37,6 +42,8 @@ func mainProcess() {
 	if !isPushedToday() {
 		task()
 		commit()
+		merge()
+		cancelMerge()
 	} else {
 		fmt.Println("今天已提交过")
 	}
@@ -79,7 +86,7 @@ func login() {
 func task() {
 	login()
 	//task
-	fmt.Println(jar.cookies)
+	//	fmt.Println(jar.cookies)
 	resp, _ := client.PostForm(task_url, url.Values{
 		"content":      {task_title},
 		"status":       {"1"},
@@ -87,6 +94,16 @@ func task() {
 		"project_name": {projectName},
 		"owner_id":     {ownerId},
 	})
+	b, _ := ioutil.ReadAll(resp.Body)
+	js, _ := simplejson.NewJson(b)
+	id, _ := js.Get("data").Get("id").Int()
+	fmt.Println(js)
+	resp.Body.Close()
+
+	login()
+	delete_url := task_url + "/" + strconv.Itoa(id)
+	req, _ := http.NewRequest("DELETE", delete_url, nil)
+	resp, _ = client.Do(req)
 	resp.Body.Close()
 }
 
@@ -128,6 +145,40 @@ func commit() {
 		}
 		resp.Body.Close()
 	}
+}
+
+func merge() {
+	login()
+	fmt.Println(merge_url)
+	resp, err := client.PostForm(merge_url, url.Values{
+		"srcBranch":  {"merge"},
+		"desBranch":  {"master"},
+		"title": {"猴子你妈逼你结婚了吗"},
+		"author": {userName},
+		"content": {"猴子你妈逼你结婚了吗"},
+	})
+
+	if err != nil {
+		merge()
+	}
+	b, _ := ioutil.ReadAll(resp.Body)
+	result, _ := simplejson.NewJson(b)
+	iid, _ = result.Get("data").Get("merge_request").Get("iid").Int()
+	resp.Body.Close()
+}
+
+func cancelMerge() {
+	login()
+	cancel_url := merge_url + "/" + strconv.Itoa(iid) + "/cancel"
+	resp, err := client.PostForm(cancel_url, url.Values{
+	})
+	if err != nil {
+		cancelMerge()
+	}
+	b, _ := ioutil.ReadAll(resp.Body)
+	result, _ := simplejson.NewJson(b)
+	fmt.Println(result)
+	resp.Body.Close()
 }
 
 func isPushedToday() bool {
