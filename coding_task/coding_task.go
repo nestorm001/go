@@ -25,7 +25,7 @@ const login_url = coding + "/account/login"
 const captcha_url = coding + "/account/captcha/login"
 const file_url = coding + "/user/" + userName + "/project/" + projectName + "/git/edit/master%252FREADME.md"
 const merge_url = coding + "/user/" + userName + "/project/" + projectName + "/git/merge"
-const ide_url = "https://ide.coding.net/ws/yriinn"
+const ide_url = "https://ide.coding.net/backend/ws/create"
 
 var jar = NewJar()
 var client = http.Client{Jar: jar}
@@ -34,20 +34,20 @@ var iid int
 
 func main() {
 	for !netTest() {
+		time.Sleep(3 * time.Second)
 	}
 	mainProcess()
-	time.Sleep(3 * time.Second)
 }
 
 func mainProcess() {
 	if !isPushedToday() {
-		task()
-		commit()
 		merge()
 		cancelMerge()
 	} else {
 		fmt.Println("今天已提交过")
 	}
+	task()
+	commit()
 	ide()
 }
 
@@ -70,11 +70,18 @@ func netTest() bool {
 
 func ide() {
 	login()
-	req, _ := http.NewRequest("GET", ide_url, nil)
+	fmt.Println(ide_url)
+	fmt.Println(jar.cookies)
+	v := url.Values{}
+	v.Add("ownerName", userName)
+	v.Add("projectName", projectName)
+
+	req, _ := http.NewRequest("POST", ide_url, strings.NewReader(v.Encode()))
 	resp, _ := client.Do(req)
 	b, _ := ioutil.ReadAll(resp.Body)
 	js, _ := simplejson.NewJson(b)
 	fmt.Println(js)
+
 	resp.Body.Close()
 }
 
@@ -96,6 +103,7 @@ func login() {
 
 func task() {
 	login()
+	fmt.Println(jar.cookies)
 	//task
 	//	fmt.Println(jar.cookies)
 	resp, _ := client.PostForm(task_url, url.Values{
@@ -108,7 +116,6 @@ func task() {
 	b, _ := ioutil.ReadAll(resp.Body)
 	js, _ := simplejson.NewJson(b)
 	id, _ := js.Get("data").Get("id").Int()
-	fmt.Println(js)
 	resp.Body.Close()
 
 	login()
@@ -121,6 +128,7 @@ func task() {
 func commit() {
 	login()
 
+	fmt.Println(jar.cookies)
 	//commit and push
 	fmt.Println(file_url)
 	req, _ := http.NewRequest("GET", file_url, nil)
