@@ -16,7 +16,7 @@ const userName = "phoenix0811"
 const password = "f34e9e3fdf6b434eefa999ffc4e26c9b6c8d54a6"
 const projectName = "monkey"
 const ownerId = "119996"
-
+const spaceKey = "eujzwk"
 
 const task_title = "猴子真坑"
 const commit_title = "自动提交"
@@ -26,7 +26,7 @@ const login_url = coding + "/account/login"
 const captcha_url = coding + "/account/captcha/login"
 const file_url = coding + "/user/" + userName + "/project/" + projectName + "/git/edit/master%252FREADME.md"
 const merge_url = coding + "/user/" + userName + "/project/" + projectName + "/git/merge"
-const ide_url = "https://ide.coding.net/backend/ws/list?page=0&size=1000&__t=1447396784373"
+const ide_url = "https://ide.coding.net/backend/ws/create"
 
 var jar = NewJar()
 var client = http.Client{Jar: jar}
@@ -53,11 +53,17 @@ func mainProcess() {
 
 func ide() {
 	login()
-	req, _ := http.NewRequest("GET", ide_url, nil)
-	resp, _ := client.Do(req)
+	fmt.Println(jar.cookies["coding.net"])
+	fmt.Println(ide_url)
+	resp, err := client.PostForm(ide_url, url.Values{
+		"spaceKey": {spaceKey},
+	})
+	fmt.Println(err == nil)
 	b, _ := ioutil.ReadAll(resp.Body)
 	js, _ := simplejson.NewJson(b)
 	fmt.Println(js)
+	fmt.Println(resp)
+
 	resp.Body.Close()
 }
 
@@ -91,6 +97,7 @@ func login() {
 		"password":    {password},
 		"remember_me": {"true"},
 	})
+	fmt.Println(resp)
 	resp.Body.Close()
 
 }
@@ -197,7 +204,6 @@ func isPushedToday() bool {
 	login()
 
 	//commit and push
-	fmt.Println(file_url)
 	req, _ := http.NewRequest("GET", file_url, nil)
 	resp, _ := client.Do(req)
 	b, _ := ioutil.ReadAll(resp.Body)
