@@ -6,17 +6,16 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/url"
+	"strconv"
+	"strings"
 	"sync"
 	"time"
-	"strings"
-	"strconv"
 )
 
 const userName = "nesto"
 const password = "e0efb1d23aa3e98057630a7fb44aa1e759a24294"
 const projectName = "not-auto-monkey"
 const ownerId = "99239"
-
 
 const task_title = "猴子真坑"
 const commit_title = "自动提交"
@@ -26,6 +25,7 @@ const login_url = coding + "/account/login"
 const captcha_url = coding + "/account/captcha/login"
 const file_url = coding + "/user/" + userName + "/project/" + projectName + "/git/edit/master%252FREADME.md"
 const merge_url = coding + "/user/" + userName + "/project/" + projectName + "/git/merge"
+const ide_url = "https://ide.coding.net/backend/ws/list?page=0&size=1000&__t=1447396784373"
 
 var jar = NewJar()
 var client = http.Client{Jar: jar}
@@ -33,9 +33,10 @@ var client = http.Client{Jar: jar}
 var iid int
 
 func main() {
-	for !netTest() {}
+	for !netTest() {
+	}
 	mainProcess()
-	time.Sleep(3*time.Second)
+	time.Sleep(3 * time.Second)
 }
 
 func mainProcess() {
@@ -47,6 +48,7 @@ func mainProcess() {
 	} else {
 		fmt.Println("今天已提交过")
 	}
+	ide()
 }
 
 func netTest() bool {
@@ -66,11 +68,20 @@ func netTest() bool {
 	}
 }
 
+func ide() {
+	login()
+	req, _ := http.NewRequest("POST", ide_url, nil)
+	resp, _ := client.Do(req)
+	b, _ := ioutil.ReadAll(resp.Body)
+	js, _ := simplejson.NewJson(b)
+	fmt.Println(js)
+	resp.Body.Close()
+}
+
 func login() {
 	//captcha
 	req, _ := http.NewRequest("GET", captcha_url, nil)
 	resp, _ := client.Do(req)
-
 	resp.Body.Close()
 
 	//login
@@ -129,8 +140,8 @@ func commit() {
 	//	fmt.Println("content: " + content)
 
 	resp, err := client.PostForm(file_url, url.Values{
-		"content":  {content},
-		"message":  {commit_title},
+		"content":       {content},
+		"message":       {commit_title},
 		"lastCommitSha": {s},
 	})
 	if err != nil {
@@ -151,11 +162,11 @@ func merge() {
 	login()
 	fmt.Println(merge_url)
 	resp, err := client.PostForm(merge_url, url.Values{
-		"srcBranch":  {"merge"},
-		"desBranch":  {"master"},
-		"title": {"猴子你妈逼你结婚了吗"},
-		"author": {userName},
-		"content": {"猴子你妈逼你结婚了吗"},
+		"srcBranch": {"merge"},
+		"desBranch": {"master"},
+		"title":     {"猴子你妈逼你结婚了吗"},
+		"author":    {userName},
+		"content":   {"猴子你妈逼你结婚了吗"},
 	})
 
 	if err != nil {
@@ -170,8 +181,7 @@ func merge() {
 func cancelMerge() {
 	login()
 	cancel_url := merge_url + "/" + strconv.Itoa(iid) + "/cancel"
-	resp, err := client.PostForm(cancel_url, url.Values{
-	})
+	resp, err := client.PostForm(cancel_url, url.Values{})
 	if err != nil {
 		cancelMerge()
 	}

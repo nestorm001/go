@@ -26,6 +26,7 @@ const login_url = coding + "/account/login"
 const captcha_url = coding + "/account/captcha/login"
 const file_url = coding + "/user/" + userName + "/project/" + projectName + "/git/edit/master%252FREADME.md"
 const merge_url = coding + "/user/" + userName + "/project/" + projectName + "/git/merge"
+const ide_url = "https://ide.coding.net/backend/ws/list?page=0&size=1000&__t=1447396784373"
 
 var jar = NewJar()
 var client = http.Client{Jar: jar}
@@ -47,6 +48,17 @@ func mainProcess() {
 	} else {
 		fmt.Println("今天已提交过")
 	}
+	ide()
+}
+
+func ide() {
+	login()
+	req, _ := http.NewRequest("GET", ide_url, nil)
+	resp, _ := client.Do(req)
+	b, _ := ioutil.ReadAll(resp.Body)
+	js, _ := simplejson.NewJson(b)
+	fmt.Println(js)
+	resp.Body.Close()
 }
 
 func netTest() bool {
