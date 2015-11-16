@@ -5,31 +5,32 @@ import (
 	"github.com/bitly/go-simplejson"
 	"io/ioutil"
 	"net/http"
+	"net/http/cookiejar"
 	"net/url"
-	"sync"
-	"time"
-	"strings"
 	"strconv"
+	"strings"
+	"time"
+	"sync"
 )
 
-const userName = "phoenix0811"
-const password = "f34e9e3fdf6b434eefa999ffc4e26c9b6c8d54a6"
-const projectName = "monkey"
-const ownerId = "119996"
-const spaceKey = "eujzwk"
+const userName = "nesto"
+const password = "e0efb1d23aa3e98057630a7fb44aa1e759a24294"
+const projectName = "not-auto-monkey"
+const ownerId = "99239"
 
 const task_title = "猴子真坑"
 const commit_title = "自动提交"
 const coding = "https://coding.net/api"
 const task_url = coding + "/user/" + userName + "/project/" + projectName + "/task"
-const login_url = coding + "/account/login"
-const captcha_url = coding + "/account/captcha/login"
+const login_url = coding + "/login"
+const captcha_url = coding + "/captcha/login"
 const file_url = coding + "/user/" + userName + "/project/" + projectName + "/git/edit/master%252FREADME.md"
 const merge_url = coding + "/user/" + userName + "/project/" + projectName + "/git/merge"
 const ide_url = "https://ide.coding.net/backend/ws/create"
 
 var jar = NewJar()
 var client = http.Client{Jar: jar}
+var cookie []*http.Cookie
 
 var iid int
 
@@ -45,26 +46,10 @@ func mainProcess() {
 		commit()
 		merge()
 		cancelMerge()
+		ide()
 	} else {
 		fmt.Println("今天已提交过")
 	}
-	ide()
-}
-
-func ide() {
-	login()
-	fmt.Println(jar.cookies["coding.net"])
-	fmt.Println(ide_url)
-	resp, err := client.PostForm(ide_url, url.Values{
-		"spaceKey": {spaceKey},
-	})
-	fmt.Println(err == nil)
-	b, _ := ioutil.ReadAll(resp.Body)
-	js, _ := simplejson.NewJson(b)
-	fmt.Println(js)
-	fmt.Println(resp)
-
-	resp.Body.Close()
 }
 
 func netTest() bool {
@@ -84,6 +69,20 @@ func netTest() bool {
 	}
 }
 
+func isPushedToday() bool {
+	login()
+
+	//commit and push
+	req, _ := http.NewRequest("GET", file_url, nil)
+	resp, _ := client.Do(req)
+	b, _ := ioutil.ReadAll(resp.Body)
+	resp.Body.Close()
+	js, _ := simplejson.NewJson(b)
+	content, _ := js.Get("data").Get("file").Get("data").String()
+	today := time.Now().Format("2006-01-02")
+	return strings.Contains(content, today)
+}
+
 func login() {
 	//captcha
 	req, _ := http.NewRequest("GET", captcha_url, nil)
@@ -95,17 +94,15 @@ func login() {
 	resp, _ = client.PostForm(login_url, url.Values{
 		"email":       {userName},
 		"password":    {password},
-		"remember_me": {"true"},
+		"remember_me": {"false"},
 	})
-	fmt.Println(resp)
+	cookie = resp.Cookies()
 	resp.Body.Close()
-
 }
 
 func task() {
 	login()
 	//task
-	//	fmt.Println(jar.cookies)
 	resp, _ := client.PostForm(task_url, url.Values{
 		"content":      {task_title},
 		"status":       {"1"},
@@ -116,7 +113,6 @@ func task() {
 	b, _ := ioutil.ReadAll(resp.Body)
 	js, _ := simplejson.NewJson(b)
 	id, _ := js.Get("data").Get("id").Int()
-	fmt.Println(js)
 	resp.Body.Close()
 
 	login()
@@ -128,9 +124,7 @@ func task() {
 
 func commit() {
 	login()
-
 	//commit and push
-	fmt.Println(file_url)
 	req, _ := http.NewRequest("GET", file_url, nil)
 	resp, _ := client.Do(req)
 	b, _ := ioutil.ReadAll(resp.Body)
@@ -138,15 +132,13 @@ func commit() {
 	js, _ := simplejson.NewJson(b)
 	s, _ := js.Get("data").Get("lastCommit").String()
 	content, _ := js.Get("data").Get("file").Get("data").String()
-	fmt.Println("commitId: " + s)
 
-	login()
 	today := time.Now().Format("2006-01-02")
 	if !strings.Contains(content, today) {
 		content = content + "\n# " + today
 	}
-	//	fmt.Println("content: " + content)
 
+	login()
 	resp, err := client.PostForm(file_url, url.Values{
 		"content":  {content},
 		"message":  {commit_title},
@@ -168,13 +160,12 @@ func commit() {
 
 func merge() {
 	login()
-	fmt.Println(merge_url)
 	resp, err := client.PostForm(merge_url, url.Values{
 		"srcBranch":  {"merge"},
 		"desBranch":  {"master"},
-		"title": {"猴子你妈逼你结婚了吗"},
+		"title": {task_title},
 		"author": {userName},
-		"content": {"猴子你妈逼你结婚了吗"},
+		"content": {task_title},
 	})
 
 	if err != nil {
@@ -200,18 +191,17 @@ func cancelMerge() {
 	resp.Body.Close()
 }
 
-func isPushedToday() bool {
-	login()
-
-	//commit and push
-	req, _ := http.NewRequest("GET", file_url, nil)
+func ide() {
+	Jar, _ := cookiejar.New(nil)
+	Jar.SetCookies(parseUrl(ide_url), cookie)
+	client.Jar = Jar
+	v := url.Values{}
+	v.Add("ownerName", userName)
+	v.Add("projectName", projectName)
+	req, _ := http.NewRequest("POST", ide_url, strings.NewReader(v.Encode()))
+	req.Header.Set("Content-Type", "application/x-www-form-urlencoded; param=value")
 	resp, _ := client.Do(req)
-	b, _ := ioutil.ReadAll(resp.Body)
 	resp.Body.Close()
-	js, _ := simplejson.NewJson(b)
-	content, _ := js.Get("data").Get("file").Get("data").String()
-	today := time.Now().Format("2006-01-02")
-	return strings.Contains(content, today)
 }
 
 type Jar struct {
@@ -239,4 +229,9 @@ func (jar *Jar) SetCookies(u *url.URL, cookies []*http.Cookie) {
 // restrictions such as in RFC 6265.
 func (jar *Jar) Cookies(u *url.URL) []*http.Cookie {
 	return jar.cookies[u.Host]
+}
+
+func parseUrl(reqUrl string) (u *url.URL) {
+	u, _ = url.Parse(reqUrl)
+	return u
 }
