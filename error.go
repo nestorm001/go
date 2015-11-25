@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"time"
+	"runtime"
 )
 
 type MyError struct {
@@ -26,4 +27,7 @@ func main() {
 	if err := run(); err != nil {
 		fmt.Println(err)
 	}
+	var m runtime.MemStats
+	runtime.ReadMemStats(&m)
+	fmt.Printf("%d Kb\n", m.Alloc / 1024)
 }
