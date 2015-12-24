@@ -198,6 +198,7 @@ func ide() {
 	v := url.Values{}
 	v.Add("ownerName", userName)
 	v.Add("projectName", projectName)
+	v.Add("memory", "256")
 	req, _ := http.NewRequest("POST", ide_url, strings.NewReader(v.Encode()))
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded; param=value")
 	resp, _ := client.Do(req)
