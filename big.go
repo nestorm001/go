@@ -26,4 +26,12 @@ func main() {
 	fmt.Printf("Big Rat: %v\n", rq)
 	rq.Mul(rm, rn).Add(rq, ro).Mul(rq, rp)
 	fmt.Printf("Big Rat: %v\n", rq)
+	var value []int
+	value = []int{1,2,3}
+	value = value[3:]
+	if len(value) != 0 {
+		fmt.Println(value)
+	} else {
+		fmt.Println("Ran out of stuff to do, exiting")
+	}
 }

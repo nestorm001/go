@@ -51,46 +51,53 @@ const (
 
 	CPNP_MSG_DISCOVER = 0x101
 	CPNP_MSG_STARTTCP = 0x110
-	CPNP_MSG_ID       = 0x130
-	CPNP_MSG_STATUS   = 0x120
-	CPNP_MSG_DATA     = 0x121
+	CPNP_MSG_ID = 0x130
+	CPNP_MSG_STATUS = 0x120
+	CPNP_MSG_DATA = 0x121
+	CPNP_MSG_QM = 0x0
 )
+
+var jobs []*imgreader
+var p *printer
 
 type cmd_handler func(head []byte, body []byte)
 
 func cpnp_packet(command int, payload []byte) []byte {
+	if command != CPNP_MSG_DATA && command != CPNP_MSG_STATUS {
+		fmt.Println("command: " + fmt.Sprintf("%X", command))
+	}
 	ret := make([]byte, 16, 10240)
 
 	copy(ret[0:], []byte("CPNP"))
 	binary.BigEndian.PutUint16(ret[4:], uint16(command))
 	binary.BigEndian.PutUint16(ret[14:], uint16(len(payload)))
-	ret = ret[:len(ret)+len(payload)]
+	ret = ret[:len(ret) + len(payload)]
 	copy(ret[16:], payload)
 
 	return ret
 }
 
 type device struct {
-	mac []byte
+	mac         []byte
 
-	udps *net.UDPConn
-	dest *net.UDPAddr
+	udps        *net.UDPConn
+	dest        *net.UDPAddr
 
-	tcps   *net.TCPConn
-	tcpd   *net.TCPAddr
-	tcpbuf []byte
+	tcps        *net.TCPConn
+	tcpd        *net.TCPAddr
+	tcpbuf      []byte
 
-	cmdseq   uint16
-	jobseq   uint16
-	handlers map[uint16]cmd_handler
-	props    map[string]string
+	cmdseq      uint16
+	jobseq      uint16
+	handlers    map[uint16]cmd_handler
+	props       map[string]string
 
 	last_status []byte
 	chunk       []byte
 
-	job *imgreader
+	job         *imgreader
 
-	cb func()
+	cb          func()
 }
 
 func new_device(printer_mac, printer_ip *string) *device {
@@ -161,8 +168,8 @@ func (c *device) wait_tcp() {
 	buf := make([]byte, 5120, 5120)
 	n, err := c.tcps.Read(buf[0:])
 	checkError(err)
-	c.tcpbuf = c.tcpbuf[0 : len(c.tcpbuf)+n]
-	copy(c.tcpbuf[len(c.tcpbuf)-n:], buf[0:n])
+	c.tcpbuf = c.tcpbuf[0 : len(c.tcpbuf) + n]
+	copy(c.tcpbuf[len(c.tcpbuf) - n:], buf[0:n])
 
 	if len(c.tcpbuf) < 16 {
 		return
@@ -191,17 +198,26 @@ func (c *device) handle_message(buf []byte) {
 	delete(c.handlers, cmdseq)
 }
 
-func (c *device) discover(cb func()) {
+func (c *device) init(cb func()) {
+	fmt.Println("init")
+	//初始时定义call back函数
 	c.cb = cb
+	p := cpnp_packet(CPNP_MSG_QM, []byte("QM"))
+	c.send(p, c.discover)
+}
+
+func (c *device) discover(head []byte, body []byte) {
+	fmt.Println("discover")
 	p := cpnp_packet(CPNP_MSG_DISCOVER, []byte{})
 	c.send(p, c.discover_reply)
 }
 
 func (c *device) discover_reply(head []byte, body []byte) {
+	fmt.Println("discover_reply")
 	if body[4] == 6 {
 		mac := ""
 		for i := 0; i < 6; i++ {
-			mac += fmt.Sprintf(":%02x", body[6+i])
+			mac += fmt.Sprintf(":%02x", body[6 + i])
 		}
 		mac = mac[1:]
 		fmt.Println("Found printer with MAC address", mac)
@@ -209,11 +225,11 @@ func (c *device) discover_reply(head []byte, body []byte) {
 
 	if c.mac != nil && bytes.Compare(c.mac, body[6:12]) != 0 {
 		fmt.Println("Not the MAC address we're looking for, " +
-			"waiting for more responses")
+		"waiting for more responses")
 		return
 	}
 
-	var ip net.IP = body[6+body[4] : 6+body[4]+body[5]]
+	var ip net.IP = body[6 + body[4] : 6 + body[4] + body[5]]
 	fmt.Println("Switching to IP address", ip.String())
 	c.dest.IP = ip
 
@@ -222,6 +238,7 @@ func (c *device) discover_reply(head []byte, body []byte) {
 }
 
 func (c *device) id_reply(head []byte, body []byte) {
+	fmt.Println("id_reply")
 	props := string(body[2:])
 	for _, bit := range strings.Split(props, ";") {
 		if len(bit) > 0 {
@@ -231,17 +248,25 @@ func (c *device) id_reply(head []byte, body []byte) {
 	}
 
 	p := cpnp_packet(CPNP_MSG_STATUS, []byte{})
-	c.send(p, c.status_reply)
+	c.send(p, c.reset)
 }
 
 func (c *device) status_reply(head []byte, body []byte) {
+	fmt.Println("status_reply")
 	/* Might tell us stuff like "go away I'm busy!"? */
 	c.cb()
 }
 
-func (c *device) start_job(job *imgreader) {
-	c.job = job
+//TODO
+func (c *device) reset(head []byte, body []byte) {
+	fmt.Println("init")
+	p := cpnp_packet(CPNP_MSG_QM, []byte("QM"))
+	c.send(p, c.status_reply)
+}
 
+func (c *device) start_job(job *imgreader) {
+	fmt.Println("start_job")
+	c.job = job
 	u, _ := user.Current()
 
 	_, fn := filepath.Split(job.fn)
@@ -256,6 +281,7 @@ func (c *device) start_job(job *imgreader) {
 }
 
 func (c *device) start_tcp(head []byte, body []byte) {
+	fmt.Println("start_tcp")
 	c.jobseq = binary.BigEndian.Uint16(head[10:])
 
 	port := binary.BigEndian.Uint16(body[4:])
@@ -327,12 +353,24 @@ func (c *device) job_done(head []byte, body []byte) {
 	c.tcpd = nil
 	c.tcps = nil
 
-	c.cb()
+	//在job_done时重新开始连接打印机
+	jobs = jobs[1:]
+	if len(jobs) != 0 {
+		time.Sleep(10 * time.Second)
+		p.add_job(jobs[0])
+		p.start()
+	} else {
+		fmt.Println("Ran out of stuff to do, exiting")
+		os.Exit(0)
+	}
+	//	c.cb()
 }
 
 func (c *device) print_data_request(head []byte, body []byte) {
 	state := int(body[0x12])
-	fmt.Println("state", state)
+	if state != 0 && state != 2 {
+		fmt.Println("state", state)
+	}
 
 	/* It frequently seems to repeat the last status response, I suppose
 	   that means it's still processing. Give it half a second. */
@@ -376,7 +414,7 @@ func (c *device) print_data_request(head []byte, body []byte) {
 func utf16_write(buf []byte, val string) {
 	enc := utf16.Encode([]rune(val))
 	for i, c := range enc {
-		binary.BigEndian.PutUint16(buf[2*i:], uint16(c))
+		binary.BigEndian.PutUint16(buf[2 * i:], uint16(c))
 	}
 }
 
@@ -411,7 +449,7 @@ func (r *imgreader) file_header(offset uint32, length uint32) []byte {
 	buf := make([]byte, 0x68)
 
 	buf[0x02] = 1
-	binary.LittleEndian.PutUint32(buf[0x04:], length+uint32(len(buf)))
+	binary.LittleEndian.PutUint32(buf[0x04:], length + uint32(len(buf)))
 	buf[0x0c] = 1
 
 	binary.LittleEndian.PutUint32(buf[0x14:], uint32(r.fsize))
@@ -426,7 +464,7 @@ func (r *imgreader) file_header(offset uint32, length uint32) []byte {
 
 func (r *imgreader) get_chunk(offset uint32, length uint32) []byte {
 	head := r.file_header(offset, length)
-	buf := make([]byte, len(head)+int(length))
+	buf := make([]byte, len(head) + int(length))
 	copy(buf[0:], head)
 
 	r.fp.Seek(int64(offset), 0)
@@ -459,18 +497,22 @@ func (p *printer) add_job(job *imgreader) {
 	p.jobs = append(p.jobs, job)
 }
 
+func add_job(job *imgreader) {
+	jobs = append(jobs, job)
+}
+
 func (p *printer) start() {
-	p.dev.discover(p.start_job)
+	p.dev.init(p.start_job)
 	p.dev.wait()
 }
 
 func (p *printer) start_job() {
-	fmt.Println("It's a", p.dev.props["DES"])
-
+	fmt.Println("start_job")
 	if len(p.jobs) == 0 {
-		fmt.Println("Ran out of stuff to do, exiting")
-		os.Exit(0)
+		os.Exit(0);
 	}
+
+	fmt.Println("It's a", p.dev.props["DES"])
 
 	job := p.jobs[0]
 	fmt.Println("Will send", job.fn)
@@ -484,17 +526,22 @@ func main() {
 	border := flag.Bool("border", false, "Allow white borders, don't crop")
 	flag.Parse()
 
-	p := new_printer()
+	p = new_printer()
 	for _, fn := range flag.Args() {
 		job := new_imgreader(fn)
 		job.border = *border
-		p.add_job(job)
+		add_job(job)
 	}
 
 	p.dev = new_device(printer_mac, printer_ip)
-	p.start()
 
-	os.Exit(0)
+	if len(jobs) != 0 {
+		p.add_job(jobs[0])
+		p.start()
+	} else {
+		fmt.Println("Ran out of stuff to do, exiting")
+		os.Exit(0)
+	}
 }
 
 func checkError(err error) {
