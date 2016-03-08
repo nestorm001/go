@@ -6,7 +6,7 @@
 package main
 
 import (
-	"./sort"
+	"../sort"
 	"fmt"
 )
 
