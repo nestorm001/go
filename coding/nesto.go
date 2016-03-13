@@ -15,7 +15,7 @@ import (
 
 const userName = "nesto"
 const password = "e0efb1d23aa3e98057630a7fb44aa1e759a24294"
-const projectName = "not-auto-monkey"
+const projectName = "monkey"
 const ownerId = "99239"
 
 const task_title = "猴子真坑"
@@ -46,7 +46,7 @@ func mainProcess() {
 		commit()
 		merge()
 		cancelMerge()
-		ide()
+		//ide()
 	} else {
 		fmt.Println("今天已提交过")
 	}

@@ -46,7 +46,7 @@ func mainProcess() {
 		commit()
 		merge()
 		cancelMerge()
-		ide()
+		//ide()
 	} else {
 		fmt.Println("今天已提交过")
 	}
