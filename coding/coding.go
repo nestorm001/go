@@ -73,12 +73,12 @@ func mainProcess() {
 	if !isPushedToday() {
 		task()
 		commit()
-		merge()
-		cancelMerge()
 		ide()
 	} else {
 		fmt.Println("今天已提交过")
 	}
+	merge()
+	cancelMerge()
 }
 
 func netTest() bool {
@@ -209,8 +209,7 @@ func merge() {
 func cancelMerge() {
 	login()
 	cancel_url := merge_url + "/" + strconv.Itoa(iid) + "/cancel"
-	resp, err := client.PostForm(cancel_url, url.Values{
-	})
+	resp, err := client.PostForm(cancel_url, url.Values{})
 	if err != nil {
 		cancelMerge()
 	}
