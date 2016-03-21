@@ -1,32 +1,38 @@
 package main
 
 import (
-	"fmt"
-	"github.com/bitly/go-simplejson"
-	"io/ioutil"
 	"net/http"
-	"net/url"
-	"sync"
 	"time"
+	"fmt"
+	"io/ioutil"
+	"github.com/bitly/go-simplejson"
 	"strings"
+	"net/url"
 	"strconv"
 	"net/http/cookiejar"
+	"sync"
+	"os"
+	"log"
+	"bufio"
+	"io"
 )
 
-const userName = "phoenix0811"
-const password = "f34e9e3fdf6b434eefa999ffc4e26c9b6c8d54a6"
+const accountFile = "account"
 const projectName = "monkey"
-const ownerId = "119996"
-
 const task_title = "猴子真坑"
 const commit_title = "自动提交"
 const coding = "https://coding.net/api"
-const task_url = coding + "/user/" + userName + "/project/" + projectName + "/task"
 const login_url = coding + "/login"
 const captcha_url = coding + "/captcha/login"
-const file_url = coding + "/user/" + userName + "/project/" + projectName + "/git/edit/master%252FREADME.md"
-const merge_url = coding + "/user/" + userName + "/project/" + projectName + "/git/merge"
 const ide_url = "https://ide.coding.net/backend/ws/create"
+
+var task_url = coding + "/user/" + userName + "/project/" + projectName + "/task"
+var file_url = coding + "/user/" + userName + "/project/" + projectName + "/git/edit/master%252FREADME.md"
+var merge_url = coding + "/user/" + userName + "/project/" + projectName + "/git/merge"
+
+var userName string
+var password string
+var ownerId string
 
 var jar = NewJar()
 var client = http.Client{Jar: jar}
@@ -34,19 +40,42 @@ var cookie []*http.Cookie
 
 var iid int
 
+var users[] User
+
 func main() {
+	initUsers();
 	for !netTest() {}
-	mainProcess()
-	time.Sleep(3*time.Second)
+	for _, user := range users {
+		userName = user.name
+		password = user.password
+		ownerId = user.ownerId
+		task_url = coding + "/user/" + userName + "/project/" + projectName + "/task"
+		file_url = coding + "/user/" + userName + "/project/" + projectName + "/git/edit/master%252FREADME.md"
+		merge_url = coding + "/user/" + userName + "/project/" + projectName + "/git/merge"
+		fmt.Println(userName)
+		mainProcess()
+		time.Sleep(3 * time.Second)
+	}
+}
+
+type User struct {
+	name     string
+	password string
+	ownerId  string
+}
+
+func initUsers() {
+	readLine(accountFile)
 }
 
 func mainProcess() {
+
 	if !isPushedToday() {
 		task()
 		commit()
 		merge()
 		cancelMerge()
-		//ide()
+		ide()
 	} else {
 		fmt.Println("今天已提交过")
 	}
@@ -235,4 +264,34 @@ func (jar *Jar) Cookies(u *url.URL) []*http.Cookie {
 func parseUrl(reqUrl string) (u *url.URL) {
 	u, _ = url.Parse(reqUrl)
 	return u
+}
+
+func readLine(filePth string) {
+	f, err := os.Open(filePth)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer f.Close()
+	bfRd := bufio.NewReader(f)
+	lineNum := 0
+	for {
+		//放在错误处理前面，即使发生错误，也会处理已经读取到的数据。
+		line, err := bfRd.ReadBytes('\n')
+		lineNum++
+		result := string(line)
+		result = strings.Split(strings.Split(result, "\n")[0], "\r")[0]
+		userInfo := strings.Split(result, ",")
+		var user User
+		user.name = userInfo[0]
+		user.password = userInfo[1]
+		user.ownerId = userInfo[2]
+		users = append(users, user)
+
+		if err != nil {
+			//遇到任何错误立即返回，并忽略 EOF 错误信息
+			if err == io.EOF {
+				return
+			}
+		}
+	}
 }
