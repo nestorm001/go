@@ -73,7 +73,6 @@ func mainProcess() {
 	if !isPushedToday() {
 		task()
 		commit()
-		ide()
 	} else {
 		fmt.Println("今天已提交过")
 	}
