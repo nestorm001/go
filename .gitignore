@@ -32,3 +32,8 @@ _testmain.go
 
 pictures
 
+/tiny_go/2.png
+/tiny_go/tiny_config
+pkg/
+projectFilesBackup/
+/tiny_go/1.jpg

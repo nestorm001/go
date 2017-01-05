@@ -24,7 +24,7 @@ func main() {
 	for i := 0;; i++ {
 		station := stations.GetIndex(i)
 		id, _ := station.Get("id").Int()
-		if (id != 0) {
+		if id != 0 {
 			name, _ := station.Get("name").String()
 			fmt.Println(name)
 			address, _ := station.Get("address").String()

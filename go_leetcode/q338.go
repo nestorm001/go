@@ -23,13 +23,13 @@ func countBits(num int) []int {
 	result := make([]int, num + 1)
 
 	result[0] = 0
-	if (num == 0) {
+	if num == 0 {
 		return result
 	}
 	result[1] = 1
 	flag := 1
-	for i := 2; i < num + 1; i++ {
-		if (i % (flag * 2) == 0) {
+	for i := 2; i < num+1; i++ {
+		if i%(flag*2) == 0 {
 			result[i] = 1
 			flag = i
 		} else {

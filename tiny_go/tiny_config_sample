@@ -1,0 +1,13 @@
+{
+	"api_key":"your api key",
+	"compress_folder":
+		[
+			"folder1",
+			"folder2"
+		],
+	"ignore_file":
+		[
+			"ignore_file1",
+			"ignore_file2"
+		]
+}

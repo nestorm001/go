@@ -84,7 +84,7 @@ func getImgUrl(url string) {
 	name := strings.Split(dir, "-")[0]
 	slice := strings.Split(url, "/")
 	length := len(slice)
-	id := slice[length-1]
+	id := slice[length - 1]
 	if isFileNeed {
 		writeImgUrl("<br><br><a href=" + url + ">" + name + "</a><br>" + "\n")
 	}
@@ -142,7 +142,7 @@ func getImg(url string, dir string) {
 	res, _ := http.Get(url)
 	slice := strings.Split(url, "/")
 	length := len(slice)
-	storagePath := dirName + dir + "/" + slice[length-1]
+	storagePath := dirName + dir + "/" + slice[length - 1]
 	file, err := os.Create(storagePath)
 	if err != nil {
 		panic(err)
