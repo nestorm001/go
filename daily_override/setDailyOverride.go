@@ -43,7 +43,7 @@ func setDailyOverride(dailyHash string) {
 }
 
 func restartAS() {
-	cmd := exec.Command("taskkill", "/IM", "studio64.exe")
+	cmd := exec.Command("taskkill", "/F", "/IM", "studio64.exe")
 	err := cmd.Start()
 	if err != nil {
 		fmt.Println(err)
